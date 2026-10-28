@@ -5,7 +5,9 @@ import { router } from "expo-router";
 import { useState } from "react";
 
 import {
+  Alert,
   FlatList,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -26,7 +28,7 @@ import { Student } from "../../data/students";
 export default function Index() {
   // Read students directly from the global context
 
-  const { students } = useStudents();
+  const { students, dispatch } = useStudents();
 
   // These stay as local state — they belong to this screen only
 
@@ -44,19 +46,40 @@ export default function Index() {
     setSelectedStudent((prev) => (prev?.id === student.id ? null : student));
   };
 
+  const handleReset = () => {
+    Alert.alert(
+      "Reset list",
+      "Restore the original student list? Any changes will be lost.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Reset",
+          style: "destructive",
+          onPress: () => dispatch({ type: "RESET" }),
+        },
+      ],
+    );
+  };
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.titleBar}>
         <Text style={styles.title}>Student Directory</Text>
 
-        {/* Navigate to the AddStudent screen — no prop passing needed */}
+        <View style={styles.buttonRow}>
+          <Pressable style={styles.resetButton} onPress={handleReset}>
+            <Text style={styles.addButtonText}>Reset</Text>
+          </Pressable>
 
-        <Pressable
-          style={styles.addButton}
-          onPress={() => router.push("/(tabs)/add-student")}
-        >
-          <Text style={styles.addButtonText}>+ Add</Text>
-        </Pressable>
+          {/* Navigate to the AddStudent screen — no prop passing needed */}
+
+          <Pressable
+            style={styles.addButton}
+            onPress={() => router.push("/(tabs)/add-student")}
+          >
+            <Text style={styles.addButtonText}>+ Add</Text>
+          </Pressable>
+        </View>
       </View>
 
       <SearchBar value={query} onChangeText={setQuery} />
@@ -104,6 +127,18 @@ const styles = StyleSheet.create({
 
   addButton: {
     backgroundColor: "#0D9488",
+
+    paddingHorizontal: 14,
+
+    paddingVertical: 6,
+
+    borderRadius: 8,
+  },
+
+  buttonRow: { flexDirection: "row", gap: 8 },
+
+  resetButton: {
+    backgroundColor: "#EF4444",
 
     paddingHorizontal: 14,
 
