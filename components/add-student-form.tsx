@@ -47,7 +47,7 @@ interface FormErrors {
 
 // Validation logic — pure function, easy to test and reason about
 
-function validateForm(data: FormData): FormErrors {
+function validateForm(data: FormData, students: Student[]): FormErrors {
   const newErrors: FormErrors = {};
 
   // Required field checks
@@ -66,6 +66,8 @@ function validateForm(data: FormData): FormErrors {
     newErrors.studentId = "Student ID is required.";
   } else if (!idPattern.test(data.studentId.trim())) {
     newErrors.studentId = "Format must be NN-NNNNN-N (e.g. 22-12345-1).";
+  } else if (students.some((s) => s.studentId === data.studentId.trim())) {
+    newErrors.studentId = "Student ID already exists";
   }
 
   if (data.department.trim().length === 0) {
@@ -97,7 +99,7 @@ export default function AddStudentForm() {
 
     skillsText: "",
   });
-  const { dispatch } = useStudents();
+  const { students, dispatch } = useStudents();
 
   // Separate state — unrelated to form field values
 
@@ -139,10 +141,10 @@ export default function AddStudentForm() {
   };
 
   useEffect(() => {
-    const newErrors = validateForm(formData);
+    const newErrors = validateForm(formData, students);
 
     setErrors(newErrors);
-  }, [formData]);
+  }, [formData, students]);
 
   useEffect(() => {
     if (!submitTrigger) return;
