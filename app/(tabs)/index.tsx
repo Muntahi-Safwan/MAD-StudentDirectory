@@ -64,7 +64,7 @@ export default function Index() {
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.titleBar}>
-        <Text style={styles.title}>Student Directory</Text>
+        <Text style={styles.title}>Student Directory ({students.length})</Text>
 
         <View style={styles.buttonRow}>
           <Pressable style={styles.resetButton} onPress={handleReset}>
